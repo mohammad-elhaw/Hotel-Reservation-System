@@ -1,11 +1,10 @@
-﻿using HotelReservation.Domain.Entities;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace HotelReservation.Infrastructure.Config;
-internal class HotelConfig : IEntityTypeConfiguration<Hotel>
+internal class HotelConfig : IEntityTypeConfiguration<Domain.Entities.Hotel>
 {
-    public void Configure(EntityTypeBuilder<Hotel> builder)
+    public void Configure(EntityTypeBuilder<Domain.Entities.Hotel> builder)
     {
         builder.Property(h => h.Name)
             .HasMaxLength(100);

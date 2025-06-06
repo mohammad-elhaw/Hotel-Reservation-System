@@ -1,4 +1,4 @@
 ﻿namespace HotelReservation.API;
-public class ApiAssembly
+public class AssemblyReference
 {
 }

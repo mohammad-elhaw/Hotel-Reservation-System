@@ -1,11 +1,20 @@
 using HotelReservation.API;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
 builder.Services.AddControllers()
-    .AddApplicationPart(typeof(ApiAssembly).Assembly);
+    .ConfigureApiBehaviorOptions(options =>
+    {
+        options.SuppressModelStateInvalidFilter = true; // Disable default model state validation
+    })
+    .AddJsonOptions(opts =>
+    {
+        opts.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+    })
+    .AddApplicationPart(typeof(AssemblyReference).Assembly);
 
 builder.Services.AddApi();
 
