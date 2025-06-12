@@ -39,6 +39,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<RoomAmenity.NotExists.IRepository, RoomAmenity.NotExists.Repository>();
         services.AddScoped<RoomAmenity.GetAll.IRepository, RoomAmenity.GetAll.Repository>();
         services.AddScoped<RoomAmenity.GetById.IRepository, RoomAmenity.GetById.Repository>();
+        services.AddScoped<RoomAmenity.Get.IRepository, RoomAmenity.Get.Repository>();
         #endregion
 
         return services;

@@ -5,7 +5,7 @@ namespace HotelReservation.Application.RoomAmenity.Queries.GetById;
 public class Handler(
     HotelReservation.Queries.Room.Exists.IRepository roomExistsRepo,
     HotelReservation.Queries.Amenity.Exists.IRepository amenityExistsRepo,
-    HotelReservation.Queries.Amenity.GetById.IRepository amenityRepo) 
+    HotelReservation.Queries.RoomAmenity.GetById.IRepository amenityRepo) 
     : IRequestHandler<Query, Result<Response>>
 {
     public async Task<Result<Response>> Handle(Query request, CancellationToken cancellationToken)
@@ -22,7 +22,7 @@ public class Handler(
                 amenityExistsResult.StatusCode);
 
 
-        var amenityResult = await amenityRepo.GetById(request.AmenityId);
+        var amenityResult = await amenityRepo.GetById(request.RoomId, request.AmenityId);
         if (amenityResult.IsFailure)
             return Result<Response>.Failure(amenityResult.Errors,
                 amenityResult.StatusCode);

@@ -46,6 +46,7 @@ public static class ServiceCollectionExtension
 
         #region RoomAmenity
         services.AddScoped<RoomAmenity.Add.IRepository, RoomAmenity.Add.Repository>();
+        services.AddScoped<RoomAmenity.Delete.IRepository, RoomAmenity.Delete.Repository>();
         #endregion
 
         return services;
