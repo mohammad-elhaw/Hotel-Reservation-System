@@ -33,9 +33,18 @@ namespace HotelReservation.Infrastructure.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
                     b.HasKey("Id");
 
-                    b.ToTable("Amenity");
+                    b.HasIndex("Name")
+                        .IsUnique();
+
+                    b.HasIndex("Type");
+
+                    b.ToTable("Amenities", (string)null);
                 });
 
             modelBuilder.Entity("HotelReservation.Domain.Entities.Hotel", b =>
@@ -70,6 +79,38 @@ namespace HotelReservation.Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Hotel");
+                });
+
+            modelBuilder.Entity("HotelReservation.Domain.Entities.OutboxMessage", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("Attempts")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsProcessed")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime>("OccurredOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Payload")
+                        .IsRequired()
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasMaxLength(250)
+                        .HasColumnType("nvarchar(250)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("IsProcessed", "Attempts");
+
+                    b.ToTable("OutboxMessages", (string)null);
                 });
 
             modelBuilder.Entity("HotelReservation.Domain.Entities.Reservation", b =>

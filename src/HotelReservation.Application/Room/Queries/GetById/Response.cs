@@ -8,4 +8,9 @@ public record Response(
     bool IsAvailable,
     int Capacity,
     string Description,
-    Guid HotelId);
+    Guid HotelId,
+    List<RoomImageResponse> Images);
+
+public record RoomImageResponse(
+    Guid Id,
+    string ImageUrl);

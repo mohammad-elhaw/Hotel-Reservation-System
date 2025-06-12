@@ -1,6 +1,4 @@
-﻿using HotelReservation.Domain.Contracts;
-using HotelReservation.Infrastructure.Repositories;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -15,9 +13,6 @@ public static class ServiceCollectionExtension
             options.UseSqlServer(configuration.GetConnectionString("DefaultConnection"));
         });
 
-        services.AddScoped<IRepositoryManager, RepositoryManager>();
-        services.AddScoped<IReservationRepository, ReservationRepository>();
-
         #region Hotel
         services.AddScoped<Hotel.Add.IRepository, Hotel.Add.Repository>();
         services.AddScoped<Hotel.Update.IRepository, Hotel.Update.Repository>();
@@ -28,6 +23,29 @@ public static class ServiceCollectionExtension
         services.AddScoped<Room.Add.IRepository, Room.Add.Repository>();
         services.AddScoped<Room.Update.IRepository, Room.Update.Repository>();
         services.AddScoped<Room.Delete.IRepository, Room.Delete.Repository>();
+        #endregion
+
+        #region RoomImage
+        services.AddScoped<Room.Image.Add.IRepository, Room.Image.Add.Repository>();
+        services.AddScoped<Room.Image.Delete.IRepository, Room.Image.Delete.Repository>();
+        #endregion
+
+        #region Outbox
+        services.AddScoped<Outbox.Add.IRepository, Outbox.Add.Repository>();
+        services.AddScoped<Outbox.GetPending.IRepository, Outbox.GetPending.Repository>();
+        services.AddScoped<Outbox.IncrementAttempts.IRepository, Outbox.IncrementAttempts.Repository>();
+        services.AddScoped<Outbox.MarkProcessed.IRepository, Outbox.MarkProcessed.Repository>();
+        services.AddScoped<Outbox.UnitOfWork.IRepository, Outbox.UnitOfWork.Repository>();
+        #endregion
+
+        #region Amenity
+        services.AddScoped<Amenity.Add.IRepository, Amenity.Add.Repository>();
+        services.AddScoped<Amenity.Delete.IRepository, Amenity.Delete.Repository>();
+        services.AddScoped<Amenity.Update.IRepository, Amenity.Update.Repository>();
+        #endregion
+
+        #region RoomAmenity
+        services.AddScoped<RoomAmenity.Add.IRepository, RoomAmenity.Add.Repository>();
         #endregion
 
         return services;

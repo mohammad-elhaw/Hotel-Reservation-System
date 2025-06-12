@@ -1,11 +1,10 @@
-﻿using HotelReservation.Domain.Entities;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace HotelReservation.Infrastructure.Config;
-internal class RoomAmenityConfig : IEntityTypeConfiguration<RoomAmenity>
+internal class RoomAmenityConfig : IEntityTypeConfiguration<Domain.Entities.RoomAmenity>
 {
-    public void Configure(EntityTypeBuilder<RoomAmenity> builder)
+    public void Configure(EntityTypeBuilder<Domain.Entities.RoomAmenity> builder)
     {
         builder.HasKey(ra => new { ra.RoomId, ra.AmenityId });
 

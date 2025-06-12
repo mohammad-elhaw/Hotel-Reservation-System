@@ -24,6 +24,9 @@ public class Handler(
             IsAvailable: roomResult.Value!.IsAvailable,
             Capacity: roomResult.Value!.Capacity,
             Description: roomResult.Value!.Description,
-            HotelId: roomResult.Value!.HotelId));
+            HotelId: roomResult.Value!.HotelId,
+            Images: roomResult.Value!.Images
+                .Select(ri => new RoomImageResponse(ri.Id,  ri.ImageUrl ))
+                .ToList()));
     }
 }

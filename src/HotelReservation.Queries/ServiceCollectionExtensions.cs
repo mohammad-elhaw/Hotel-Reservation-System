@@ -8,7 +8,7 @@ public static class ServiceCollectionExtensions
 {
     public static IServiceCollection AddQueries(this IServiceCollection services)
     {
-        services.AddTransient<IDbConnection>(sp =>
+        services.AddScoped<IDbConnection>(sp =>
         {
             var configuration = sp.GetRequiredService<IConfiguration>();
             return new SqlConnection(configuration.GetConnectionString("DefaultConnection"));
@@ -22,6 +22,23 @@ public static class ServiceCollectionExtensions
         #region Room
         services.AddScoped<Room.GetById.IRepository, Room.GetById.Repository>();
         services.AddScoped<Room.GetAll.IRepository, Room.GetAll.Repository>();
+        services.AddScoped<Room.Exists.IRepository, Room.Exists.Repository>();
+        #endregion
+
+        #region RoomImage
+        services.AddScoped<RoomImage.GetById.IRepository, RoomImage.GetById.Repository>();
+        #endregion
+
+        #region Amenity
+        services.AddScoped<Amenity.GetById.IRepository, Amenity.GetById.Repository>();
+        services.AddScoped<Amenity.GetAll.IRepository, Amenity.GetAll.Repository>();
+        services.AddScoped<Amenity.Exists.IRepository, Amenity.Exists.Repository>();
+        #endregion
+
+        #region RoomAmenity
+        services.AddScoped<RoomAmenity.NotExists.IRepository, RoomAmenity.NotExists.Repository>();
+        services.AddScoped<RoomAmenity.GetAll.IRepository, RoomAmenity.GetAll.Repository>();
+        services.AddScoped<RoomAmenity.GetById.IRepository, RoomAmenity.GetById.Repository>();
         #endregion
 
         return services;

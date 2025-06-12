@@ -7,13 +7,19 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="CloudImage\CloudImageService.cs~RF77853168.TMP" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\HotelReservation.Domain\HotelReservation.Domain.csproj" />
     <ProjectReference Include="..\HotelReservation.Infrastructure\HotelReservation.Infrastructure.csproj" />
     <ProjectReference Include="..\HotelReservation.Queries\HotelReservation.Queries.csproj" />
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="CloudinaryDotNet" Version="1.27.5" />
     <PackageReference Include="MediatR" Version="12.5.0" />
+    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="8.0.1" />
   </ItemGroup>
 
 </Project>

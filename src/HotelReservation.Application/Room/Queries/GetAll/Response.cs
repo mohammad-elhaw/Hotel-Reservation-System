@@ -1,4 +1,5 @@
-﻿using HotelReservation.Domain.Entities.Enums;
+﻿using HotelReservation.Application.Room.Queries.GetById;
+using HotelReservation.Domain.Entities.Enums;
 
 namespace HotelReservation.Application.Room.Queries.GetAll;
 public record Response(
@@ -8,4 +9,5 @@ public record Response(
     bool IsAvailable,
     int Capacity,
     string Description,
-    Guid HotelId);
+    Guid HotelId,
+    List<RoomImageResponse> Images);

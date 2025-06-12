@@ -10,13 +10,44 @@ public class Repository(IDbConnection connection) : IRepository
     {
         try
         {
-            var sql = "SELECT * FROM Room WHERE Id = @roomId AND HotelId = @hotelId";
-            var room = await connection.QueryFirstOrDefaultAsync<Domain.Entities.Room>(
-                sql, new { roomId, hotelId });
-            if(room is null)
+            var sql = @"
+                        SELECT r.*, i.* 
+                        FROM Room r 
+                        INNER JOIN RoomImage i ON r.Id = i.RoomId        
+                        WHERE r.Id = @roomId AND HotelId = @hotelId";
+
+            var roomDic = new Dictionary<Guid, Domain.Entities.Room>();
+            
+            await connection.QueryAsync<Domain.Entities.Room, 
+                Domain.Entities.RoomImage, Domain.Entities.Room>(
+                sql,
+                (room, image) =>
+                {
+                    if (!roomDic.TryGetValue(room.Id, out var existingRoom))
+                    {
+                        existingRoom = room;
+                        existingRoom.Images = [];
+                        roomDic.Add(room.Id, existingRoom);
+                    }
+                    if (image != null)
+                    {
+                        existingRoom.Images.Add(image);
+                    }
+                    return existingRoom;
+                },
+                new { roomId, hotelId },
+                splitOn: "Id"
+            );
+
+
+            var roomResult = roomDic.Values.FirstOrDefault();
+
+            if(roomResult is null)
                 return Result<Domain.Entities.Room>.Failure(
-                    ["Room not found."]);
-            return Result<Domain.Entities.Room>.Success(room);
+                    ["Room not found."],
+                    StatusCodes.Status404NotFound);
+
+            return Result<Domain.Entities.Room>.Success(roomResult);
         }
         catch
         {

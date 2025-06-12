@@ -10,9 +10,8 @@ public class GetAllEndpoint(IMediator mediator): BaseController
     {
         var result = await mediator.Send(new Query(hotelId));
 
-        if (result.IsFailure)
-            return HandleFailure(result, "An error occurred while retrieving the rooms.");
-
-        return Ok(result.Value);
+        return result.IsSuccess
+            ? Ok(result.Value)
+            : HandleFailure(result, "An error occurred while retrieving the rooms.");
     }
 }

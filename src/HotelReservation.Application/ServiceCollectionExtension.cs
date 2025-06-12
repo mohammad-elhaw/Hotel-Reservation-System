@@ -1,6 +1,8 @@
-﻿using HotelReservation.Application.Contracts;
+﻿using CloudinaryDotNet;
+using HotelReservation.Application.RoomImage.Outbox;
 using HotelReservation.Infrastructure;
 using HotelReservation.Queries;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System.Reflection;
 
@@ -14,7 +16,23 @@ public static class ServiceCollectionExtension
         {
             cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly());
         });
-        services.AddScoped<IReservationService, ReservationService>();
+
+        services.AddSingleton<ICloudinary, Cloudinary>(provider =>
+        {
+            var configuration = provider.GetRequiredService<IConfiguration>();
+            return new Cloudinary(new Account(
+                configuration["Cloudinary:CloudName"],
+                configuration["Cloudinary:ApiKey"],
+                configuration["Cloudinary:ApiSecret"]));
+        });
+
+        services.AddScoped<CloudImage.Contracts.IAdd , CloudImage.Add>();
+        services.AddScoped<CloudImage.Contracts.IDelete, CloudImage.Delete>();
+
+
+        #region Host Services
+        services.AddHostedService<OutboxDispatcher>();
+        #endregion
 
         services.AddInfrastructure();
         services.AddQueries();
