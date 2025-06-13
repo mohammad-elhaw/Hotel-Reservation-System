@@ -2,8 +2,8 @@
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
-namespace HotelReservation.API.Room.Image.Endpoint;
-public class Delete(IMediator mediator) : BaseController
+namespace HotelReservation.API.Room.Image;
+public class DeleteEndpoint(IMediator mediator) : BaseController
 {
     [HttpDelete("{imageId:guid}")]
     public async Task<IActionResult> DeleteImage( Guid imageId)

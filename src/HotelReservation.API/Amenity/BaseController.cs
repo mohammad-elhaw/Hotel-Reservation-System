@@ -2,7 +2,7 @@
 
 namespace HotelReservation.API.Amenity;
 
-[Route("api/Amenities")]
+[Route("api/amenities")]
 public class BaseController : API.BaseController
 {
 }

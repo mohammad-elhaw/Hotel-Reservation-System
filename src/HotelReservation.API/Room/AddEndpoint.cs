@@ -11,9 +11,9 @@ public class AddEndpoint(IMediator mediator) : BaseController
     {
         var updatedRequest = request with { HotelId = hotelId };
         var result = await mediator.Send(updatedRequest);
-        if (result.IsFailure)
-            return HandleFailure(result, "Failed to add room");
-
-        return StatusCode(StatusCodes.Status201Created);
+        
+        return result.IsSuccess
+            ? StatusCode(StatusCodes.Status201Created)
+            : HandleFailure(result, "Failed to add room");
     }
 }

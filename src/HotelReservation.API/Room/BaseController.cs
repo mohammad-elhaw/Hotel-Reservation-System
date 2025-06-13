@@ -2,7 +2,7 @@
 
 namespace HotelReservation.API.Room;
 
-[Route("api/Hotels/{hotelId}/Rooms")]
+[Route("api/hotels/{hotelId}/rooms")]
 public abstract class BaseController : API.BaseController
 {
 }

@@ -3,14 +3,14 @@ using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
-namespace HotelReservation.API.Room.Image.Endpoint;
-public class Add(IMediator mediator) : BaseController
+namespace HotelReservation.API.Room.Image;
+public class AddEndpoint(IMediator mediator) : BaseController
 {
     [HttpPost]
     public async Task<IActionResult> AddImage(Guid hotelId, Guid roomId, 
         [FromForm] List<IFormFile> images)
     {
-        if(images == null || !images.Any())
+        if(images == null || images.Count == 0)
             return BadRequest("At least one image is required.");
 
         var result = await mediator.Send(new Request(hotelId, roomId, images));
