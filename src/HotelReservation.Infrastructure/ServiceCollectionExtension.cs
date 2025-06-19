@@ -49,6 +49,15 @@ public static class ServiceCollectionExtension
         services.AddScoped<RoomAmenity.Delete.IRepository, RoomAmenity.Delete.Repository>();
         #endregion
 
+        #region Reservation
+        services.AddScoped<Reservation.Add.IRepository, Reservation.Add.Repository>();
+        services.AddScoped<Reservation.Delete.IRepository, Reservation.Delete.Repository>();
+        #endregion
+
+        #region UnitOfWork
+        services.AddScoped<UnitOfWork.IRepository, UnitOfWork.Repository>();
+        #endregion
+
         return services;
     }
 }

@@ -13,7 +13,7 @@ public class Repository(IDbConnection connection) : IRepository
             var sql = @"
                         SELECT r.*, i.* 
                         FROM Room r 
-                        INNER JOIN RoomImage i ON r.Id = i.RoomId        
+                        LEFT JOIN RoomImage i ON r.Id = i.RoomId        
                         WHERE r.Id = @roomId AND HotelId = @hotelId";
 
             var roomDic = new Dictionary<Guid, Domain.Entities.Room>();
@@ -29,7 +29,7 @@ public class Repository(IDbConnection connection) : IRepository
                         existingRoom.Images = [];
                         roomDic.Add(room.Id, existingRoom);
                     }
-                    if (image != null)
+                    if (image != null && image.Id != Guid.Empty)
                     {
                         existingRoom.Images.Add(image);
                     }

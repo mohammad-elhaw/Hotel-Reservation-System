@@ -16,7 +16,7 @@ public class Handler(
 
         var result = Domain.Entities.Room.Create
         (
-            new Domain.Entities.Room.RoomData
+            new Domain.Entities.Room.CreateRoomData
             (
                 request.RoomNumber,
                 request.Type,

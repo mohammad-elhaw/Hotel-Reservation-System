@@ -1,11 +1,10 @@
-﻿using HotelReservation.Domain.Entities;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace HotelReservation.Infrastructure.Config;
-internal class ReservationConfig : IEntityTypeConfiguration<Reservation>
+internal class ReservationConfig : IEntityTypeConfiguration<Domain.Entities.Reservation>
 {
-    public void Configure(EntityTypeBuilder<Reservation> builder)
+    public void Configure(EntityTypeBuilder<Domain.Entities.Reservation> builder)
     {
         builder.Property(r => r.CreatedAt)
             .HasDefaultValueSql("GETDATE()");

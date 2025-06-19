@@ -2,8 +2,8 @@
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
-namespace HotelReservation.API.Hotel.Update;
-public class Endpoint(IMediator mediator) : BaseController
+namespace HotelReservation.API.Hotel;
+public class UpdateEndpoint(IMediator mediator) : BaseController
 {
     [HttpPut("{id:guid}")]
     public async Task<IActionResult> Update(Guid id, 
@@ -12,9 +12,8 @@ public class Endpoint(IMediator mediator) : BaseController
         var updatedRequest = request with { Id = id };
         var result = await mediator.Send(updatedRequest);
 
-        if (result.IsFailure)
-            return HandleFailure(result, "An error occurred while updating the hotel.");
-
-        return Ok(result.Value!);
+        return result.IsSuccess
+            ? Ok(result.Value!)
+            : HandleFailure(result, "An error occurred while updating the hotel.");
     }
 }

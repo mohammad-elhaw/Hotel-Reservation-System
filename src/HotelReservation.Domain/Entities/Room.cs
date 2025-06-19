@@ -8,6 +8,7 @@ public class Room : Entity
     public bool IsAvailable { get; set; } = true;
     public int Capacity { get; set; }
     public string Description { get; set; } = null!;
+    public double BasePricePerNight { get; set; }
     // Navigation properties
     public Guid HotelId { get; set; }
     public Hotel Hotel { get; set; } = null!;
@@ -15,14 +16,29 @@ public class Room : Entity
     public List<ReservationRoom> ReservationRooms { get; set; } = new();
     public List<RoomAmenity> RoomAmenities { get; set; } = new();
 
-    public record RoomData(
+    public abstract record RoomData(
         int RoomNumber,
         RoomType Type,
         int Capacity,
         string Description,
         Guid HotelId);
 
-    public static Result<Room> Create(RoomData data)
+    public sealed record CreateRoomData(
+        int RoomNumber,
+        RoomType Type,
+        int Capacity,
+        string Description,
+        Guid HotelId) : RoomData(RoomNumber, Type, Capacity, Description, HotelId);
+
+    public sealed record class UpdateRoomData(
+        int RoomNumber,
+        RoomType Type,
+        bool IsAvailable,
+        int Capacity,
+        string Description,
+        Guid HotelId): RoomData(RoomNumber,Type,Capacity, Description, HotelId);
+
+    public static Result<Room> Create(CreateRoomData data)
     {
         var validationResult = ValidateRoom(data);
         if(validationResult.IsFailure)
@@ -41,7 +57,7 @@ public class Room : Entity
         return Result<Room>.Success(room);
     }
 
-    public static Result<Room> Update(Room room, RoomData newData)
+    public static Result<Room> Update(Room room, UpdateRoomData newData)
     {
         var validationResult = ValidateRoom(newData);
         if (validationResult.IsFailure)
@@ -49,6 +65,7 @@ public class Room : Entity
 
         room.RoomNumber = newData.RoomNumber;
         room.Type = newData.Type;
+        room.IsAvailable = newData.IsAvailable;
         room.Capacity = newData.Capacity;
         room.Description = newData.Description;
         room.HotelId = newData.HotelId;
@@ -78,5 +95,18 @@ public class Room : Entity
             return Result<RoomData>.Failure(errors);
 
         return Result<RoomData>.Success(data);
+    }
+
+    public static Result<bool> IsAvailableBetween(
+        DateTime checkIn,
+        DateTime checkOut,
+        List<(DateTime CheckIn, DateTime CheckOut, BookingStatus Status)> reservations)
+    {
+        if(checkIn >= checkOut)
+            return Result<bool>.Failure(["Check-in date must be before check-out date."]);
+
+        return Result<bool>.Success(
+            reservations.Where(r => r.Status != BookingStatus.Cancelled)
+            .All(r => checkOut <= r.CheckIn || checkIn >= r.CheckOut));
     }
 }
