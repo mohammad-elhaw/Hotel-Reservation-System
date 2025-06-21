@@ -17,6 +17,7 @@ public static class ServiceCollectionExtensions
         #region Hotel
         services.AddScoped<Hotel.GetById.IRepository, Hotel.GetById.Repository>();
         services.AddScoped<Hotel.GetAll.IRepository, Hotel.GetAll.Repository>();
+        services.AddScoped<Hotel.Exists.IRepository, Hotel.Exists.Repository>();
         #endregion
 
         #region Room

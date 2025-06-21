@@ -5,8 +5,8 @@ using Microsoft.AspNetCore.Http;
 
 namespace HotelReservation.Application.Reservation.Commands.Add;
 public class Handler(
-    Queries.Reservation.GetAll.IRepository reservationGetRepo,
-    Queries.Room.GetByIds.IRepository getRoomsByIdsRepo,
+    HotelReservation.Queries.Reservation.GetAll.IRepository reservationGetRepo,
+    HotelReservation.Queries.Room.GetByIds.IRepository getRoomsByIdsRepo,
     Infrastructure.Room.Update.IRepository updateRoomRepo,
     Infrastructure.Reservation.Add.IRepository reservationAddRepo,
     Infrastructure.UnitOfWork.IRepository unitOfWork) 
