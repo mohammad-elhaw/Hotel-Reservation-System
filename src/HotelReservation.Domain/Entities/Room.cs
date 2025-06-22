@@ -18,21 +18,21 @@ public class Room : Entity
 
     public abstract record RoomData(
         int RoomNumber,
-        RoomType Type,
+        string Type,
         int Capacity,
         string Description,
         Guid HotelId);
 
     public sealed record CreateRoomData(
         int RoomNumber,
-        RoomType Type,
+        string Type,
         int Capacity,
         string Description,
         Guid HotelId) : RoomData(RoomNumber, Type, Capacity, Description, HotelId);
 
-    public sealed record class UpdateRoomData(
+    public sealed record UpdateRoomData(
         int RoomNumber,
-        RoomType Type,
+        string Type,
         bool IsAvailable,
         int Capacity,
         string Description,
@@ -47,7 +47,7 @@ public class Room : Entity
         var room = new Room()
         {
             RoomNumber = data.RoomNumber,
-            Type = data.Type,
+            Type = Enum.Parse<RoomType>(data.Type),
             Capacity = data.Capacity,
             Description = data.Description,
             HotelId = data.HotelId,
@@ -64,7 +64,7 @@ public class Room : Entity
             return Result<Room>.Failure(validationResult.Errors);
 
         room.RoomNumber = newData.RoomNumber;
-        room.Type = newData.Type;
+        room.Type = Enum.Parse<RoomType>(newData.Type);
         room.IsAvailable = newData.IsAvailable;
         room.Capacity = newData.Capacity;
         room.Description = newData.Description;
@@ -79,7 +79,7 @@ public class Room : Entity
         if (data.RoomNumber <= 0)
             errors.Add("Room number must be greater than 0");
 
-        if (!Enum.IsDefined(data.Type))
+        if (!Enum.TryParse<RoomType>(data.Type,true, out _))
             errors.Add("Invalid RoomType");
 
         if (data.Capacity <= 0)
@@ -91,7 +91,7 @@ public class Room : Entity
         if (data.HotelId == Guid.Empty)
             errors.Add("Hotel ID is required");
 
-        if (errors.Any())
+        if (errors.Count != 0)
             return Result<RoomData>.Failure(errors);
 
         return Result<RoomData>.Success(data);

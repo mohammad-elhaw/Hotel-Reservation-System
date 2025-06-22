@@ -65,7 +65,7 @@ public class Handler(
             var updatedResult = Domain.Entities.Room.Update(room, new Domain.Entities.Room.UpdateRoomData(
 
                 RoomNumber: room.RoomNumber,
-                Type: room.Type,
+                Type: room.Type.ToString(),
                 IsAvailable: false,
                 Capacity: room.Capacity,
                 Description: room.Description,
