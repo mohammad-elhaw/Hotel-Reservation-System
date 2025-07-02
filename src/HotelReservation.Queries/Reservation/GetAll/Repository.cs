@@ -59,13 +59,13 @@ public class Repository(IDbConnection connection) : IRepository
     }
 
     public async Task<Dictionary<Guid, List<(DateTime CheckIn, DateTime CheckOut, 
-        BookingStatus Status)>>> GetReservationsForRooms(List<Guid> roomIds)
+        BookingStatus Status)>>> GetValidReservationsForRooms(List<Guid> roomIds)
     {
         string sql = @"
                     SELECT rr.RoomId, r.CheckInDate, r.CheckOutDate, r.Status
                     FROM Reservation r
                     INNER JOIN ReservationRoom rr ON rr.ReservationId = r.Id
-                    WHERE rr.RoomId IN @roomIds";
+                    WHERE rr.RoomId IN @roomIds AND r.Status = 'Confirmed'";
 
 
         var result = await connection.QueryAsync<(Guid RoomId, DateTime CheckInDate,

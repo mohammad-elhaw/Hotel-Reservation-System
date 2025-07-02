@@ -9,4 +9,4 @@ public record Request(
     string CustomerEmail,
     string CustomerPhoneNumber,
     Guid HotelId,
-    List<Guid> RoomIds) : IRequest<Result<Guid>>;
+    List<Guid> RoomIds) : IRequest<Result<Response>>;

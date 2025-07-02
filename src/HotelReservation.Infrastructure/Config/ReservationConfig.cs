@@ -27,5 +27,10 @@ internal class ReservationConfig : IEntityTypeConfiguration<Domain.Entities.Rese
         builder.HasOne(r => r.Hotel)
             .WithMany(h => h.Reservations)
             .HasForeignKey(r => r.HotelId);
+
+        builder.HasIndex(r => r.Status);
+        builder.HasIndex(r => r.CheckInDate);
+        builder.HasIndex(r => r.CheckOutDate);
+        builder.HasIndex(r => r.ExpirationTime);
     }
 }

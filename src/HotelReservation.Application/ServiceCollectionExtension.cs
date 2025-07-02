@@ -1,4 +1,6 @@
 ﻿using CloudinaryDotNet;
+using Hangfire;
+using HotelReservation.Application.Jobs;
 using HotelReservation.Application.RoomImage.Outbox;
 using HotelReservation.Infrastructure;
 using HotelReservation.Queries;
@@ -25,6 +27,17 @@ public static class ServiceCollectionExtension
                 configuration["Cloudinary:ApiKey"],
                 configuration["Cloudinary:ApiSecret"]));
         });
+
+        #region HangFire registeration
+        services.AddHangfire((sp, config) =>
+        {
+            var configuration = sp.GetRequiredService<IConfiguration>();
+            config.UseSqlServerStorage(configuration.GetConnectionString("DefaultConnection"));
+        });
+
+        services.AddHangfireServer();
+        services.AddScoped<RoomAvailabilityChecker>(); 
+        #endregion
 
         services.AddScoped<CloudImage.Contracts.IAdd , CloudImage.Add>();
         services.AddScoped<CloudImage.Contracts.IDelete, CloudImage.Delete>();

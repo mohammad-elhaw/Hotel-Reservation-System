@@ -9,6 +9,8 @@ internal class ReservationRoomConfig : IEntityTypeConfiguration<ReservationRoom>
     {
         builder.HasKey(rr => new { rr.ReservationId, rr.RoomId });
 
+        builder.HasIndex(rr => rr.RoomId);
+
         builder.Property(rr => rr.PricePerNight)
             .HasColumnType("decimal(18,2)")
             .IsRequired();

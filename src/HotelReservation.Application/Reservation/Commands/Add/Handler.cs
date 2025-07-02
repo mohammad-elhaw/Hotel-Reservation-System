@@ -1,5 +1,4 @@
 ﻿using HotelReservation.Domain;
-using HotelReservation.Domain.Entities.Enums;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 
@@ -7,14 +6,20 @@ namespace HotelReservation.Application.Reservation.Commands.Add;
 public class Handler(
     HotelReservation.Queries.Reservation.GetAll.IRepository reservationGetRepo,
     HotelReservation.Queries.Room.GetByIds.IRepository getRoomsByIdsRepo,
-    Infrastructure.Room.Update.IRepository updateRoomRepo,
+    HotelReservation.Queries.Hotel.GetById.IRepository hotelRepo,
     Infrastructure.Reservation.Add.IRepository reservationAddRepo,
     Infrastructure.UnitOfWork.IRepository unitOfWork) 
-    : IRequestHandler<Request, Result<Guid>>
+    : IRequestHandler<Request, Result<Response>>
 {
-    public async Task<Result<Guid>> Handle(Request request, CancellationToken cancellationToken)
+    public async Task<Result<Response>> Handle(Request request, CancellationToken cancellationToken)
     {
-        var reservationMap = await reservationGetRepo.GetReservationsForRooms(request.RoomIds);
+        var reservationMap = await reservationGetRepo.GetValidReservationsForRooms(request.RoomIds);
+
+        var hotelResult = await hotelRepo.GetById(request.HotelId);
+
+        if (hotelResult.IsFailure)
+            return Result<Response>.Failure(
+                hotelResult.Errors, hotelResult.StatusCode);
 
         List<Guid> unAvailableRoomIds = [];
         foreach (var roomId in request.RoomIds)
@@ -27,7 +32,7 @@ public class Handler(
                 request.CheckInDate, request.CheckOutDate, reservations);
 
             if(isAvailable.IsFailure)
-                return Result<Guid>.Failure(
+                return Result<Response>.Failure(
                     isAvailable.Errors, isAvailable.StatusCode);
             
             if(!isAvailable.Value)
@@ -35,46 +40,40 @@ public class Handler(
         }
 
         if(unAvailableRoomIds.Count > 0)
-            return Result<Guid>.Failure(
+            return Result<Response>.Failure(
                 [$"Some rooms are unavailable: {string.Join(",", unAvailableRoomIds)}"]);
 
 
-        var reservation = new Domain.Entities.Reservation
-        {
-            CheckInDate = request.CheckInDate,
-            CheckOutDate = request.CheckOutDate,
-            CustomerName = request.CustomerName,
-            CustomerEmail = request.CustomerEmail,
-            CustomerPhoneNumber = request.CustomerPhoneNumber,
-            HotelId = request.HotelId,
-            Status = BookingStatus.Pending,
-            CreatedAt = DateTime.UtcNow
-        };
+        
+        var reservationResult = Domain.Entities.Reservation
+            .Create(new Domain.Entities.Reservation.ReservationData
+        (
+            CheckInDate: request.CheckInDate,
+            CheckOutDate: request.CheckOutDate,
+            TotalPrice: 0,
+            CustomerName: request.CustomerName,
+            CustomerEmail: request.CustomerEmail,
+            CustomerPhoneNumber: request.CustomerPhoneNumber,
+            HotelId: request.HotelId
+        ));
+
+        if(reservationResult.IsFailure)
+            return Result<Response>.Failure(
+                reservationResult.Errors, reservationResult.StatusCode);
 
         double total = 0;
 
-        ///// we need to get rooms first and then update them to make them unavailable
+        ///// we need to make room unavailable only if the reservation is confirmed
 
         var roomsResult = await getRoomsByIdsRepo.GetByIds(request.RoomIds, request.HotelId);
 
         if (roomsResult.IsFailure)
-            return Result<Guid>.Failure(roomsResult.Errors, roomsResult.StatusCode);
+            return Result<Response>.Failure(roomsResult.Errors, roomsResult.StatusCode);
 
-        foreach(var room in roomsResult.Value!)
+        Domain.Entities.Reservation reservation = reservationResult.Value!;
+
+        foreach (var room in roomsResult.Value!)
         {
-            var updatedResult = Domain.Entities.Room.Update(room, new Domain.Entities.Room.UpdateRoomData(
-
-                RoomNumber: room.RoomNumber,
-                Type: room.Type.ToString(),
-                IsAvailable: false,
-                Capacity: room.Capacity,
-                Description: room.Description,
-                HotelId: room.HotelId
-            ));
-            if(updatedResult.IsFailure)
-                return Result<Guid>.Failure(updatedResult.Errors);
-
-            updateRoomRepo.Update(updatedResult.Value!);
             double dynamicPrice = CalculateDynamicPrice(room, request.CheckInDate, request.CheckOutDate);
             total += dynamicPrice;
 
@@ -91,17 +90,38 @@ public class Handler(
         var saveResult = await unitOfWork.SaveChanges();
 
         if(saveResult.IsSuccess && saveResult.StatusCode == StatusCodes.Status409Conflict)
-            return Result<Guid>.Success(
-                reservation.Id,
+            return Result<Response>.Success(MappingToResponse(reservation, hotelResult.Value!),
                 StatusCodes.Status409Conflict,
                 saveResult.Code);
 
         return saveResult.IsSuccess
-            ? Result<Guid>.Success(reservation.Id, StatusCodes.Status201Created, saveResult.Code)
-            : Result<Guid>.Failure(
+            ? Result<Response>.Success(MappingToResponse(reservation, hotelResult.Value!),
+                StatusCodes.Status201Created, saveResult.Code)
+            : Result<Response>.Failure(
                 ["Failed to create reservation"], 
                 StatusCodes.Status500InternalServerError,
                 saveResult.Code);
+    }
+
+    private static Response MappingToResponse(Domain.Entities.Reservation reservation,
+        Domain.Entities.Hotel hotel)
+    {
+        return new Response(
+            Id: reservation.Id,
+            CheckInDate: reservation.CheckInDate,
+            CheckOutDate: reservation.CheckOutDate,
+            CreatedAt: reservation.CreatedAt,
+            TotalPrice: reservation.TotalPrice,
+            CustomerName: reservation.CustomerName,
+            CustomerEmail: reservation.CustomerEmail,
+            CustomerPhoneNumber: reservation.CustomerPhoneNumber,
+            Status: reservation.Status,
+            Hotel: new HotelResponse(
+                Id: hotel.Id,
+                Name: hotel.Name,
+                Address: hotel.Address,
+                Description: hotel.Description,
+                Rating: hotel.Rating));
     }
 
     private static double CalculateDynamicPrice(Domain.Entities.Room room, 
@@ -138,4 +158,7 @@ public class Handler(
 
         return Math.Round(totalPrice / totalNights, 2);
     }
+
+
+
 }

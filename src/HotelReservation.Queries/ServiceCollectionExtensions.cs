@@ -25,6 +25,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<Room.GetAll.IRepository, Room.GetAll.Repository>();
         services.AddScoped<Room.Exists.IRepository, Room.Exists.Repository>();
         services.AddScoped<Room.GetByIds.IRepository, Room.GetByIds.Repository>();
+        services.AddScoped<Room.CleanUpRooms.IRepository, Room.CleanUpRooms.Repository>();
         #endregion
 
         #region RoomImage
@@ -47,6 +48,7 @@ public static class ServiceCollectionExtensions
         #region Reservation
         services.AddScoped<Reservation.GetAll.IRepository, Reservation.GetAll.Repository>();
         services.AddScoped<Reservation.GetById.IRepository, Reservation.GetById.Repository>();
+        services.AddScoped<Reservation.GetAllRooms.IRepository, Reservation.GetAllRooms.Repository>();
         #endregion
 
         return services;

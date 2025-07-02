@@ -15,5 +15,7 @@ internal class RoomConfig : IEntityTypeConfiguration<Domain.Entities.Room>
 
         builder.Property(r => r.Type)
             .HasConversion<string>();
+
+        builder.HasIndex(r => r.IsAvailable);
     }
 }

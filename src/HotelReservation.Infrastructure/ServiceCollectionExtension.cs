@@ -52,6 +52,7 @@ public static class ServiceCollectionExtension
         #region Reservation
         services.AddScoped<Reservation.Add.IRepository, Reservation.Add.Repository>();
         services.AddScoped<Reservation.Delete.IRepository, Reservation.Delete.Repository>();
+        services.AddScoped<Reservation.Cancel.IRepository, Reservation.Cancel.Repository>();
         #endregion
 
         #region UnitOfWork
